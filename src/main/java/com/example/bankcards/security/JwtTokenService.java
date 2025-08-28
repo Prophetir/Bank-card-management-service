@@ -46,11 +46,10 @@ public class JwtTokenService {
 
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .issuer("http://%s:%s".formatted(provider, port))
-                    .subject(jwsHeader.getKeyID())
+                    .subject(userDto.getId().toString())
                     .jwtID(UUID.randomUUID().toString())
                     .issueTime(Date.from(now))
                     .expirationTime((Date.from(now.plusSeconds(86400))))
-                    .claim("id", userDto.getId())
                     .claim("role", "ROLE_" + userDto.getUserRole())
                     .claim("name", userDto.getName())
                     .claim("email", userDto.getEmail())

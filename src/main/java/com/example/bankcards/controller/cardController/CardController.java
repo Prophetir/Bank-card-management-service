@@ -2,42 +2,43 @@ package com.example.bankcards.controller.cardController;
 
 import com.example.bankcards.model.dto.card.CardDto;
 import com.example.bankcards.model.dto.card.CreateCardFormDto;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
+import com.example.bankcards.model.dto.card.NumberTransactionCardForm;
+import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
+import com.example.bankcards.model.dto.response.TransactionResponse;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface CardController {
 
     /** USER endpoints **/
 
-    CardDto getCard(String tokenHeader, UUID id);
+    CardDto getCard(CardDto cardDto);
 
     List<CardDto> getUserCards(String tokenHeader);
 
-    void requestCreateCard(String tokenHeader, CreateCardFormDto cardFormDto);
+    TransactionResponse requestCreateCard(String tokenHeader, CreateCardFormDto cardFormDto);
 
-    void requestBlockCard(String tokenHeader, UUID id);
+    TransactionResponse requestBlockCard(String tokenHeader, CardDto cardDto);
 
-    String showBalance(String tokenHeader, UUID id);
+    TransactionResponse showBalance(String tokenHeader, CardDto cardDto);
 
-    String transaction(String tokenHeader, UUID senderId, UUID recipientId);
+    TransactionResponse transactionByCardNumber(String tokenHeader, NumberTransactionCardForm numberForm);
+
+    TransactionResponse transactionByPhoneNumber(String tokenHeader, PhoneTransactionCardForm phoneForm);
 
     /** ADMIN endpoints **/
 
     List<CardDto> getAllCards(String tokenHeader);
 
-    void addCard(String userToken, CreateCardFormDto cardFormDto);
+    TransactionResponse addCard(CreateCardFormDto cardFormDto);
 
-    void activateCard(String tokenHeader, UUID id);
+    TransactionResponse activateCard(CardDto cardDto);
 
-    void updateCard(String tokenHeader, UUID id, CardDto card);
+    TransactionResponse blockCard(CardDto cardDto);
 
-    void removeCard(String tokenHeader, UUID id);
+    TransactionResponse unblockCard(CardDto cardDto);
 
-    void blockCard(String tokenHeader, UUID id);
+    TransactionResponse deleteCard(CardDto cardDto);
 
-    void unblockCard(String tokenHeader, UUID id);
+    TransactionResponse softDeleteCard(CardDto cardDto);
 }

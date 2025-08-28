@@ -14,6 +14,7 @@ import java.util.List;
 public class CardManagement {
 
     public static void main(String[] args) {
+
         SpringApplication.run(CardManagement.class);
     }
 }

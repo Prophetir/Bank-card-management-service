@@ -1,6 +1,5 @@
 package com.example.bankcards.model.dto.card;
 
-import com.example.bankcards.util.CardStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,15 +10,11 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardDto {
+public class PhoneTransactionCardForm {
 
-    private UUID id;
+    private UUID senderCardId;
 
-    private String cardNumber;
+    private String recipientPhoneNumber;
 
-    private BigDecimal balance;
-
-    private UUID ownerId;
-
-    private CardStatus status;
+    private BigDecimal amount;
 }

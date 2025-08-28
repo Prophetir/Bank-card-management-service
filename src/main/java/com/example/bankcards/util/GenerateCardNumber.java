@@ -2,7 +2,11 @@ package com.example.bankcards.util;
 
 public class GenerateCardNumber {
 
-    public static String generateCardNumber(String tokenId, String userId) {
+    public static String generateCardNumber() {
+
+        String tokenId = "f55fb98d-0a60-46ab-b9e9-e1654161f18d";
+
+        String userId = "f65fb98d-0a60-46ab-b9e9-e1654161f18d";
 
         StringBuilder cardNumber = new StringBuilder().append("2");
 

@@ -25,8 +25,8 @@ server:
   port: 5435
 
 key:
-  private: "C:/Users/Vlad/Desktop/Bank_Card_Testing/src/main/resources/db/rsaKeys/private.pem"
-  public:  "C:/Users/Vlad/Desktop/Bank_Card_Testing/src/main/resources/db/rsaKeys/public.pem"
+  private: "C:/Users/Vlad/Desktop/Bank_Card_Management_System/src/main/resources/db/rsaKeys/private.pem"
+  public:  "C:/Users/Vlad/Desktop/Bank_Card_Management_System/src/main/resources/db/rsaKeys/public.pem"
 
 security:
   provider: "180.0.0.1"

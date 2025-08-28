@@ -2,36 +2,42 @@ package com.example.bankcards.service.cardService;
 
 import com.example.bankcards.model.dto.card.CardDto;
 import com.example.bankcards.model.dto.card.CreateCardFormDto;
+import com.example.bankcards.model.dto.card.NumberTransactionCardForm;
+import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
+import com.example.bankcards.model.dto.response.TransactionResponse;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface CardService {
 
     /** USER functions **/
 
-    void getCard(String tokenHeader, CardDto cardDto);
+    CardDto getCard(UUID cardId);
 
-    void getCards(String tokenHeader);
+    List<CardDto> getCards(UUID userId);
 
-    void transaction(String tokenHeader, CardDto cardDto);
+    TransactionResponse transactionByCardNumber(UUID userId, NumberTransactionCardForm numberForm);
 
-    void requestCreateCard(String tokenHeader, CreateCardFormDto createCardFormDto);
+    TransactionResponse transactionByPhoneNumber(UUID userId, PhoneTransactionCardForm phoneForm);
 
-    void requestBlockCard(String tokenHeader, CardDto cardDto);
+    TransactionResponse requestCreateCard(UUID userId, CreateCardFormDto createCardFormDto);
 
-    void showBalance(String tokenHeader, CardDto cardDto);
+    TransactionResponse requestBlockCard(UUID userId, CardDto cardDto);
+
+    TransactionResponse showBalance(UUID userId, CardDto cardDto);
 
     /** ADMIN functions **/
 
-    void addCard(String userToken, CreateCardFormDto cardFormDto);
+    TransactionResponse addCard(CreateCardFormDto cardFormDto);
 
-    void activateCard(String tokenHeader, CardDto cardDto);
+    TransactionResponse activateCard(CardDto cardDto);
 
-    void updateCard(String tokenHeader, CardDto cardDto);
+    TransactionResponse blockCard(CardDto cardDto);
 
-    void removeCard(String tokenHeader, UUID idd);
+    TransactionResponse unblockCard(CardDto cardDto);
 
-    void blockCard(String tokenHeader, UUID id);
+    TransactionResponse deleteCard(CardDto cardDto);
 
-    void unblockCard(String tokenHeader, UUID id);
+    TransactionResponse softDeleteCard(CardDto cardDto);
 }

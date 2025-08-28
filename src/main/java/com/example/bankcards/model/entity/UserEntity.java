@@ -4,6 +4,8 @@ import com.example.bankcards.util.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +24,10 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @OneToOne
+    @JoinColumn(name = "user_profile", unique = true, nullable = false)
+    private UserProfileEntity userProfile;
+
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -32,10 +38,18 @@ public class UserEntity {
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "phone", nullable = false)
+    private String phone;
+
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "cards")
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<CardEntity> cards;
+    @Column(name = "registration_date", nullable = false)
+    private LocalDate registrationDate;
+
+    @Column(name = "last_login", nullable = false)
+    private LocalDate lastLogin;
+
+    @Column(name = "soft_delete", nullable = false)
+    private boolean softDelete = false;
 }

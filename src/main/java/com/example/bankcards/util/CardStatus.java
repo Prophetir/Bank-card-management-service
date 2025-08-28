@@ -3,5 +3,7 @@ package com.example.bankcards.util;
 public enum CardStatus {
     BLOCKED,
     ACTIVE,
-    EXPIRED
+    EXPIRED,
+    ISSUED,
+    CLOSED
 }

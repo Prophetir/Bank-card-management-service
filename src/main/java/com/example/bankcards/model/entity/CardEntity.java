@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,7 +25,6 @@ public class CardEntity {
     private UUID id;
 
     @Column(name = "cardNumber", nullable = false, unique = true, length = 16)
-
     @NotBlank
     private String cardNumber;
 
@@ -32,8 +32,8 @@ public class CardEntity {
     private BigDecimal balance;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
-    private UserEntity owner;
+    @JoinColumn(name = "owner", nullable = false)
+    private UserProfileEntity owner;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -41,6 +41,9 @@ public class CardEntity {
 
     @Column(name = "expiration_date", nullable = false)
     private LocalDate expirationDate;
+
+    @Column(name = "soft-delete", nullable = false)
+    private Boolean deleteFlag = false;
 
     @PrePersist
     private void prePersist() {
