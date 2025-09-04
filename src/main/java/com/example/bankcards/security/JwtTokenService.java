@@ -1,7 +1,7 @@
 package com.example.bankcards.security;
 
 import com.example.bankcards.model.dto.jwt.JwtTokenDto;
-import com.example.bankcards.model.dto.user.UserDto;
+import com.example.bankcards.model.dto.user.RegisterUserDto;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.JWKMatcher;
@@ -32,7 +32,7 @@ public class JwtTokenService {
     @Value("${security.port}")
     private String port;
 
-    public JwtTokenDto generateToken(UserDto userDto) {
+    public JwtTokenDto generateToken(RegisterUserDto registerUserDto) {
 
         Instant now = Instant.now();
 
@@ -46,14 +46,14 @@ public class JwtTokenService {
 
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .issuer("http://%s:%s".formatted(provider, port))
-                    .subject(userDto.getId().toString())
+                    .subject(registerUserDto.getId().toString())
                     .jwtID(UUID.randomUUID().toString())
                     .issueTime(Date.from(now))
                     .expirationTime((Date.from(now.plusSeconds(86400))))
-                    .claim("role", "ROLE_" + userDto.getUserRole())
-                    .claim("name", userDto.getName())
-                    .claim("email", userDto.getEmail())
-                    .claim("password", userDto.getPassword())
+                    .claim("role", "ROLE_" + registerUserDto.getUserRole())
+                    .claim("name", registerUserDto.getName())
+                    .claim("email", registerUserDto.getEmail())
+                    .claim("password", registerUserDto.getPassword())
                     .build();
 
             SignedJWT signedJWT = new SignedJWT(jwsHeader, claimsSet);

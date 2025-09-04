@@ -3,12 +3,12 @@ package com.example.bankcards.controller.cardController.cardControllerImpl;
 import com.example.bankcards.controller.cardController.CardController;
 import com.example.bankcards.model.dto.card.CardDto;
 import com.example.bankcards.model.dto.card.CreateCardFormDto;
+import com.example.bankcards.model.dto.profile.CreateProfileFormDto;
 import com.example.bankcards.model.dto.card.NumberTransactionCardForm;
 import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
 import com.example.bankcards.model.dto.response.TransactionResponse;
 import com.example.bankcards.security.JwtTokenService;
-import com.example.bankcards.service.cardService.serviceImpl.CardServiceImpl;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.example.bankcards.service.cardService.CardService;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ import java.util.UUID;
 public class CardControllerImpl implements CardController {
 
     @Resource
-    private CardServiceImpl service;
+    private CardService service;
 
     @Resource
     private JwtTokenService tokenService;
@@ -45,13 +45,12 @@ public class CardControllerImpl implements CardController {
     /** Служит для отправки другому сервису запрос на создание карты.
      * Пользователь отправляет обязательную для этой процедуры информацию через форму.
      * Админ в свою очередь просматривает эту заявку и регистрирует данные в БД,
-     * а эти данные используются для создания БД. Там и дополняется другая информация,
-     * такая как, например, номер карты.
+     * а эти данные используются для создания сущности в БД.
     **/
     @PostMapping("/user/req_create")
     @PreAuthorize("hasRole('USER')")
     @Override
-    public TransactionResponse requestCreateCard(@RequestHeader("Authorization") String tokenHeader, @RequestBody CreateCardFormDto cardFormDto) {
+    public TransactionResponse requestCreateCard(@RequestHeader("Authorization") String tokenHeader, @RequestBody CreateProfileFormDto cardFormDto) {
         return service.requestCreateCard(UUID.fromString(tokenService.decoderToken(tokenHeader).getSubject()), cardFormDto);
     }
 
@@ -69,6 +68,7 @@ public class CardControllerImpl implements CardController {
         return service.showBalance(UUID.fromString(tokenService.decoderToken(tokenHeader).getSubject()), cardDto);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/transaction/card-number")
     @Override
     public TransactionResponse transactionByCardNumber(@RequestHeader("Authorization") String tokenHeader, @RequestBody NumberTransactionCardForm numberForm) {
@@ -76,6 +76,7 @@ public class CardControllerImpl implements CardController {
     }
 
     @PostMapping("/transaction/phone-number")
+    @PreAuthorize("hasRole('USER')")
     @Override
     public TransactionResponse transactionByPhoneNumber(@RequestHeader("Authorization") String tokenHeader, @RequestBody PhoneTransactionCardForm phoneForm) {
         return service.transactionByPhoneNumber(UUID.fromString(tokenService.decoderToken(tokenHeader).getSubject()), phoneForm);

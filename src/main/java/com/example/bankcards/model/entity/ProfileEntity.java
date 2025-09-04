@@ -16,21 +16,15 @@ import java.util.UUID;
 @Table(name = "users_profiles")
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserProfileEntity {
+public class ProfileEntity {
 
     @Id
     @Column(name = "id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "password", nullable = false)
-    private String password;
-
     @OneToOne(mappedBy = "userProfile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private UserEntity relatedUser;
+    private RegisterUserEntity relatedUser;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CardEntity> cards;
@@ -76,4 +70,7 @@ public class UserProfileEntity {
 
     @Column(name = "registration_date", nullable = false)
     private LocalDate registrationDate;
+
+    @Column(name = "soft-delete", nullable = false)
+    private boolean softDelete = false;
 }

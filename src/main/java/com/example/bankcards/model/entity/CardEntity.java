@@ -7,7 +7,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -33,7 +32,7 @@ public class CardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner", nullable = false)
-    private UserProfileEntity owner;
+    private ProfileEntity owner;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

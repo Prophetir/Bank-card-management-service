@@ -13,13 +13,16 @@ import java.util.UUID;
 @Repository
 public interface CardRepository extends JpaRepository<CardEntity, UUID> {
 
-    @Query(value = "select c from CardEntity c join c.owner u " +
-            "where u.id = :userId and c.id = :cardId", nativeQuery = false)
-    Optional<CardEntity> findUserCardById(@Param("cardId") UUID cardId, @Param("userId") UUID userId);
+    @Query("select c from CardEntity c join ProfileEntity p on c.owner = p.id " +
+            "where p.id = :profileId and c.id = :cardId")
+    Optional<CardEntity> findUserCardById(@Param("cardId") UUID cardId, @Param("profileId") UUID userId);
 
-    @Query(value = "select c.* from cards c join users u on c.owner_id = :userId", nativeQuery = true)
-    List<CardEntity> findAllUserCartByUserId(@Param("userId") UUID userId);
+    @Query(value = "select c.* from cards c where c.owner_id = :profileId", nativeQuery = true)
+    List<CardEntity> findAllUserCartByUserId(@Param("profileId") UUID profileId);
 
     @Query(value = "select c.* from cards c where c.card_number = :cardNumber", nativeQuery = true)
     Optional<CardEntity> findCardByCardNumber(@Param("cardNumber") String cardNumber);
+
+    @Query("select c from CardEntity c where c.owner.phoneNumber = :phoneNumber")
+    Optional<CardEntity> findCardByPhone(@Param("phoneNumber") String phoneNumber);
 }

@@ -2,6 +2,7 @@ package com.example.bankcards.controller.cardController;
 
 import com.example.bankcards.model.dto.card.CardDto;
 import com.example.bankcards.model.dto.card.CreateCardFormDto;
+import com.example.bankcards.model.dto.profile.CreateProfileFormDto;
 import com.example.bankcards.model.dto.card.NumberTransactionCardForm;
 import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
 import com.example.bankcards.model.dto.response.TransactionResponse;
@@ -16,7 +17,7 @@ public interface CardController {
 
     List<CardDto> getUserCards(String tokenHeader);
 
-    TransactionResponse requestCreateCard(String tokenHeader, CreateCardFormDto cardFormDto);
+    TransactionResponse requestCreateCard(String tokenHeader, CreateProfileFormDto cardFormDto);
 
     TransactionResponse requestBlockCard(String tokenHeader, CardDto cardDto);
 

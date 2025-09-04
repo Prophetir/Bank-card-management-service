@@ -2,6 +2,7 @@ package com.example.bankcards.service.cardService;
 
 import com.example.bankcards.model.dto.card.CardDto;
 import com.example.bankcards.model.dto.card.CreateCardFormDto;
+import com.example.bankcards.model.dto.profile.CreateProfileFormDto;
 import com.example.bankcards.model.dto.card.NumberTransactionCardForm;
 import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
 import com.example.bankcards.model.dto.response.TransactionResponse;
@@ -21,7 +22,7 @@ public interface CardService {
 
     TransactionResponse transactionByPhoneNumber(UUID userId, PhoneTransactionCardForm phoneForm);
 
-    TransactionResponse requestCreateCard(UUID userId, CreateCardFormDto createCardFormDto);
+    TransactionResponse requestCreateCard(UUID userId, CreateProfileFormDto createProfileFormDto);
 
     TransactionResponse requestBlockCard(UUID userId, CardDto cardDto);
 

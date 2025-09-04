@@ -1,43 +1,25 @@
 package com.example.bankcards.model.dto.card;
 
-import com.example.bankcards.util.DocumentType;
-import com.example.bankcards.util.GenderType;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.time.LocalDate;
+import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@Data
 public class CreateCardFormDto {
 
     private String fullName;
 
-    private String email;
-
-    private String password;
-
-    private GenderType gender;
+    private String gender;
 
     private String birthday;
 
-    private String phoneNumber;
+    private String address;
 
-    private DocumentType documentType;
+    private String documentType;
 
     private String passportNumber;
 
     private String passportSeries;
 
-    private String issueBy;
-
-    private String address;
-
-    private String taxId;
-
     private String citizenship;
-
-    private String employmentInfo;
 }

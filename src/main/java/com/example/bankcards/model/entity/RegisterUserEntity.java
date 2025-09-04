@@ -4,10 +4,7 @@ import com.example.bankcards.util.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -17,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Table(name = "users")
-public class UserEntity {
+public class RegisterUserEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -26,7 +23,7 @@ public class UserEntity {
 
     @OneToOne
     @JoinColumn(name = "user_profile", unique = true, nullable = false)
-    private UserProfileEntity userProfile;
+    private ProfileEntity userProfile;
 
     @Column(name = "name", nullable = false)
     private String name;
