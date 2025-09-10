@@ -1,5 +1,10 @@
 package com.example.bankcards.util;
 
+/**
+ * Эту ерунду надо переработать, но пока пусть побудет так,
+ * т.к. есть более приоритетные задачи,
+ * а пока поставлю задачу на её выполнение.
+ * **/
 public class GenerateCardNumber {
 
     public static String generateCardNumber() {

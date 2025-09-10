@@ -10,9 +10,11 @@ import com.example.bankcards.model.entity.ProfileEntity;
 import com.example.bankcards.repository.ProfileRepository;
 import com.example.bankcards.service.profileService.ProfileDomainService;
 import com.example.bankcards.service.profileService.ProfileService;
+import com.example.bankcards.util.MaskPhoneAndCardNumber;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -20,16 +22,21 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService, ProfileDomainService {
-
     private final ProfileRepository profileRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     private final ModelMapper modelMapper;
 
     @Override
     public ProfileDto getProfile(UUID id) {
-        return modelMapper.map(profileRepository.findById(id)
+        ProfileDto profileDto = modelMapper.map(profileRepository.findById(id)
                         .orElseThrow(() -> new NotFoundException("Profile not found")),
                 ProfileDto.class);
+
+        profileDto.setPhoneNumber(MaskPhoneAndCardNumber.maskPhoneNumber(profileDto.getPhoneNumber()));
+
+        return profileDto;
     }
 
     /**
@@ -78,7 +85,7 @@ public class ProfileServiceImpl implements ProfileService, ProfileDomainService 
     }
 
     @Override
-    public ProfileEntity getProfileEntity(UUID userId) {
+    public ProfileEntity getProfileByUserId(UUID userId) {
         return profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new NotFoundException("Profile not found"));
     }

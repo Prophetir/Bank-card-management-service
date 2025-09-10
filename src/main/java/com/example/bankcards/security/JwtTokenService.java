@@ -1,7 +1,7 @@
 package com.example.bankcards.security;
 
 import com.example.bankcards.model.dto.jwt.JwtTokenDto;
-import com.example.bankcards.model.dto.user.RegisterUserDto;
+import com.example.bankcards.model.dto.registerUser.RegisterUserDto;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.JWKMatcher;

@@ -1,9 +1,10 @@
 package com.example.bankcards.service.authService.authServiceImpl;
 
+import com.example.bankcards.exception.exceptions.NotFoundException;
 import com.example.bankcards.model.dto.jwt.JwtTokenDto;
-import com.example.bankcards.model.dto.user.LoginUserDto;
-import com.example.bankcards.model.dto.user.RegisterFormUserDto;
-import com.example.bankcards.model.dto.user.RegisterUserDto;
+import com.example.bankcards.model.dto.registerUser.LoginRegisterUserDto;
+import com.example.bankcards.model.dto.registerUser.RegisterFormUserDto;
+import com.example.bankcards.model.dto.registerUser.RegisterUserDto;
 import com.example.bankcards.model.entity.RegisterUserEntity;
 import com.example.bankcards.repository.RegisterUserRepository;
 import com.example.bankcards.security.JwtTokenService;
@@ -12,6 +13,8 @@ import com.example.bankcards.util.UserRole;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,6 +27,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final JwtTokenService jwtTokenService;
 
+    private final PasswordEncoder passwordEncoder;
+
     private final ModelMapper modelMapper;
 
     @Transactional
@@ -31,6 +36,8 @@ public class AuthServiceImpl implements AuthService {
     public JwtTokenDto register(RegisterFormUserDto registerDto) {
 
         RegisterUserEntity registerUserEntity = modelMapper.map(registerDto, RegisterUserEntity.class);
+
+        registerUserEntity.setPassword(passwordEncoder.encode(registerUserEntity.getPassword()));
 
         registerUserEntity.setUserRole(UserRole.USER);
 
@@ -48,23 +55,23 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public JwtTokenDto login(LoginUserDto loginUserDto) {
+    public JwtTokenDto login(LoginRegisterUserDto loginRegisterUserDto) {
 
-        Optional<RegisterUserEntity> userEntity = registerUserRepository.findByEmailAndPassword(
-                loginUserDto.getEmail(), loginUserDto.getPassword());
+       RegisterUserEntity userEntity = registerUserRepository.findByEmail(loginRegisterUserDto.getEmail())
+               .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(loginRegisterUserDto.getPassword(), userEntity.getPassword()))
+            throw new BadCredentialsException("Wrong password");
 
         System.out.println(
                 "\n-------| RegisterUserEntity for Login |-------\n"
-                + "        | Name: " +     userEntity.get().getName() +     " |\n"
-                + "        | Email: " +    userEntity.get().getEmail() +    " |\n"
-                + "        | Password: " + userEntity.get().getPassword() + " |\n"
-                + "        | Role: " +     userEntity.get().getUserRole() +     " |"
+                + "        | Name: " +     userEntity.getName() +     " |\n"
+                + "        | Email: " +    userEntity.getEmail() +    " |\n"
+                + "        | Password: " + userEntity.getPassword() + " |\n"
+                + "        | Role: " +     userEntity.getUserRole() +     " |"
                 + "\n-------| RegisterUserEntity for Login |-------\n"
         );
 
-        if (userEntity.isPresent()) {
-
-            return jwtTokenService.generateToken(modelMapper.map(userEntity.get(), RegisterUserDto.class));
-        } else throw new RuntimeException();
+        return jwtTokenService.generateToken(modelMapper.map(userEntity, RegisterUserDto.class));
     }
 }

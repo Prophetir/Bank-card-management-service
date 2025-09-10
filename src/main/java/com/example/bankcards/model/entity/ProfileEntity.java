@@ -2,6 +2,7 @@ package com.example.bankcards.model.entity;
 
 import com.example.bankcards.util.DocumentType;
 import com.example.bankcards.util.GenderType;
+import com.example.bankcards.util.encryption.AesGcmEncryptor;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,21 +48,25 @@ public class ProfileEntity {
     @Column(name = "password_number", nullable = false)
     private String passportNumber;
 
+    @Convert(converter = AesGcmEncryptor.class)
     @Column(name = "password_series", nullable = false)
     private String passportSeries;
 
     @Column(name = "issue_by", nullable = false)
     private String issueBy;
 
+    @Convert(converter = AesGcmEncryptor.class)
     @Column(name = "address", nullable = false)
     private String address;
 
+    @Convert(converter = AesGcmEncryptor.class)
     @Column(name = "tax_id", nullable = false)
     private String taxId;
 
     @Column(name = "citizenship", nullable = false)
     private String citizenship;
 
+    @Convert(converter = AesGcmEncryptor.class)
     @Column(name = "employment_info", nullable = false)
     private String employmentInfo;
 

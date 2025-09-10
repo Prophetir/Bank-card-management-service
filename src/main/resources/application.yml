@@ -27,6 +27,7 @@ server:
 key:
   private: "C:/Users/Vlad/Desktop/Bank_Card_Management_System/src/main/resources/db/rsaKeys/private.pem"
   public:  "C:/Users/Vlad/Desktop/Bank_Card_Management_System/src/main/resources/db/rsaKeys/public.pem"
+  aes: "AbCdEfGhIjKlMnOpQrStUvWxYz123456"
 
 security:
   provider: "180.0.0.1"

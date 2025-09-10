@@ -22,6 +22,8 @@ public interface CardService {
 
     TransactionResponse transactionByPhoneNumber(UUID userId, PhoneTransactionCardForm phoneForm);
 
+    TransactionResponse transactionBetweenUserCards(UUID userId, NumberTransactionCardForm numberForm);
+
     TransactionResponse requestCreateCard(UUID userId, CreateProfileFormDto createProfileFormDto);
 
     TransactionResponse requestBlockCard(UUID userId, CardDto cardDto);

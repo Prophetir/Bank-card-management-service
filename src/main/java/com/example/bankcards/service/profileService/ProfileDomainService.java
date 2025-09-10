@@ -6,7 +6,7 @@ import com.example.bankcards.model.entity.ProfileEntity;
 import java.util.UUID;
 
 public interface ProfileDomainService  {
-    ProfileEntity getProfileEntity(UUID id);
+    ProfileEntity getProfileByUserId(UUID userId);
 
     ProfileEntity findProfileByPassportData(CreateCardFormDto createFormDto);
 }

@@ -1,6 +1,7 @@
 package com.example.bankcards.model.entity;
 
 import com.example.bankcards.util.CardStatus;
+import com.example.bankcards.util.encryption.AesGcmEncryptor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -23,6 +24,7 @@ public class CardEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Convert(converter = AesGcmEncryptor.class)
     @Column(name = "cardNumber", nullable = false, unique = true, length = 16)
     @NotBlank
     private String cardNumber;

@@ -4,17 +4,18 @@ import com.example.bankcards.exception.exceptions.NotFoundException;
 import com.example.bankcards.exception.exceptions.TransactionException;
 import com.example.bankcards.model.dto.card.CardDto;
 import com.example.bankcards.model.dto.card.CreateCardFormDto;
-import com.example.bankcards.model.dto.profile.CreateProfileFormDto;
 import com.example.bankcards.model.dto.card.NumberTransactionCardForm;
 import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
+import com.example.bankcards.model.dto.profile.CreateProfileFormDto;
 import com.example.bankcards.model.dto.response.TransactionResponse;
 import com.example.bankcards.model.entity.CardEntity;
-import com.example.bankcards.model.entity.ProfileEntity;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.service.cardService.CardService;
 import com.example.bankcards.service.profileService.ProfileDomainService;
 import com.example.bankcards.util.CardStatus;
 import com.example.bankcards.util.GenerateCardNumber;
+import com.example.bankcards.util.MaskPhoneAndCardNumber;
+import com.example.bankcards.util.encryption.AesGcmEncryptor;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -42,16 +42,20 @@ public class CardServiceImpl implements CardService {
         CardEntity cardEntity = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException("Card not found by id"));
 
+        cardEntity.setCardNumber(MaskPhoneAndCardNumber.maskCardNumber(cardEntity.getCardNumber()));
+
         return modelMapper.map(cardEntity, CardDto.class);
     }
 
     @Override
     public List<CardDto> getCards(UUID userId) {
-
-        return cardRepository.findAllUserCartByUserId(userId)
+        List<CardDto> cardDtos = cardRepository.findAllUserCartByUserId(userId)
                 .stream()
                 .map(cardEntity -> modelMapper.map(cardEntity, CardDto.class))
                 .toList();
+        cardDtos.forEach(cardDto -> cardDto.setCardNumber(MaskPhoneAndCardNumber.maskCardNumber(cardDto.getCardNumber())));
+
+        return cardDtos;
     }
 
     @Transactional
@@ -59,10 +63,10 @@ public class CardServiceImpl implements CardService {
     public TransactionResponse transactionByCardNumber(UUID userId, NumberTransactionCardForm numberForm) {
 
         CardEntity senderCard = cardRepository.findUserCardById(
-                numberForm.getSenderCardId(), profileService.getProfileEntity(userId).getId())
+                numberForm.getSenderCardId(), profileService.getProfileByUserId(userId).getId())
                 .orElseThrow(() -> new NotFoundException("Sender card not found by id"));
 
-        CardEntity recipientCard = cardRepository.findCardByCardNumber(numberForm.getRecipientCardNumber())
+        CardEntity recipientCard = cardRepository.findCardByCardNumberOrByCardNumberAndProfileId(null, numberForm.getRecipientCardNumber())
                 .orElseThrow(() -> new NotFoundException("Recipient card not found by cardNumber"));
 
         checkBalance(senderCard.getBalance(), numberForm.getAmount());
@@ -78,7 +82,7 @@ public class CardServiceImpl implements CardService {
     public TransactionResponse transactionByPhoneNumber(UUID userId, PhoneTransactionCardForm phoneForm) {
 
         CardEntity senderCard = cardRepository.findUserCardById(
-                phoneForm.getSenderCardId(), profileService.getProfileEntity(userId).getId())
+                phoneForm.getSenderCardId(), profileService.getProfileByUserId(userId).getId())
                 .orElseThrow(() -> new NotFoundException("Not found sender card by id"));
 
         CardEntity recipientCard = cardRepository.findCardByPhone(phoneForm.getRecipientPhoneNumber())
@@ -89,6 +93,25 @@ public class CardServiceImpl implements CardService {
         setCardsBalance(senderCard, recipientCard, phoneForm.getAmount());
 
         return new TransactionResponse("------| Transaction from card by number: %s by card by phone number: %s successfully |-------\n"
+                .formatted(senderCard.getCardNumber(), recipientCard.getOwner().getPhoneNumber()));
+    }
+
+    @Transactional
+    @Override
+    public TransactionResponse transactionBetweenUserCards(UUID userId, NumberTransactionCardForm numberForm) {
+
+        CardEntity senderCard = cardRepository.findUserCardById(
+                profileService.getProfileByUserId(userId).getId(), numberForm.getSenderCardId())
+                .orElseThrow(() -> new NotFoundException("Sender card not found by id"));
+
+        CardEntity recipientCard = cardRepository.findCardByCardNumberOrByCardNumberAndProfileId(null, numberForm.getRecipientCardNumber())
+                .orElseThrow(() -> new NotFoundException("Recipient card not found by cardNumber"));
+
+        checkBalance(senderCard.getBalance(), recipientCard.getBalance());
+
+        setCardsBalance(senderCard, recipientCard, numberForm.getAmount());
+
+        return new TransactionResponse("------| Transaction from card by number: %s by card by card number: %s successfully |-------\n"
                 .formatted(senderCard.getCardNumber(), recipientCard.getOwner().getPhoneNumber()));
     }
 
@@ -203,8 +226,8 @@ public class CardServiceImpl implements CardService {
 
     /** Other method **/
 
-    private void checkBalance(BigDecimal senderBalance, BigDecimal receiverBalance) {
-        if (senderBalance.compareTo(receiverBalance) < 0)
+    private void checkBalance(BigDecimal senderBalance, BigDecimal recipientBalance) {
+        if (senderBalance.compareTo(recipientBalance) < 0)
             throw new TransactionException("Not enough funds on the sender's card");
     }
 

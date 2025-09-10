@@ -8,6 +8,7 @@ import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
 import com.example.bankcards.model.dto.response.TransactionResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CardController {
 
@@ -26,6 +27,8 @@ public interface CardController {
     TransactionResponse transactionByCardNumber(String tokenHeader, NumberTransactionCardForm numberForm);
 
     TransactionResponse transactionByPhoneNumber(String tokenHeader, PhoneTransactionCardForm phoneForm);
+
+    TransactionResponse transactionBetweenUserCards(String tokenHeader, NumberTransactionCardForm numberForm);
 
     /** ADMIN endpoints **/
 

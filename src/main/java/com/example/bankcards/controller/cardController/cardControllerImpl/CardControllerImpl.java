@@ -82,6 +82,13 @@ public class CardControllerImpl implements CardController {
         return service.transactionByPhoneNumber(UUID.fromString(tokenService.decoderToken(tokenHeader).getSubject()), phoneForm);
     }
 
+    @PostMapping("/transaction/user-cards")
+    @PreAuthorize("hasRole('USER')")
+    @Override
+    public TransactionResponse transactionBetweenUserCards(@RequestHeader("Authorization") String tokenHeader, NumberTransactionCardForm numberForm) {
+        return service.transactionBetweenUserCards(UUID.fromString(tokenService.decoderToken(tokenHeader).getSubject()), numberForm);
+    }
+
     /** ADMIN endpoints **/
 
     @GetMapping("/admin/getAll")

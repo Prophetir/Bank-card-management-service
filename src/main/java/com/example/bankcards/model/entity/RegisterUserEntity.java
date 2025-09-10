@@ -1,6 +1,7 @@
 package com.example.bankcards.model.entity;
 
 import com.example.bankcards.util.UserRole;
+import com.example.bankcards.util.encryption.AesGcmEncryptor;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,6 +39,7 @@ public class RegisterUserEntity {
     @Column(name = "phone", nullable = false)
     private String phone;
 
+    @Convert(converter = AesGcmEncryptor.class)
     @Column(name = "password", nullable = false)
     private String password;
 

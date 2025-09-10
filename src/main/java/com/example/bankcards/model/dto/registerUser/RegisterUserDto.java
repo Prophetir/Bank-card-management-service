@@ -1,4 +1,4 @@
-package com.example.bankcards.model.dto.user;
+package com.example.bankcards.model.dto.registerUser;
 
 import com.example.bankcards.util.UserRole;
 import lombok.Getter;

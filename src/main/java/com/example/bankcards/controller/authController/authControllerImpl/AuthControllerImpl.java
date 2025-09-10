@@ -2,8 +2,8 @@ package com.example.bankcards.controller.authController.authControllerImpl;
 
 import com.example.bankcards.controller.authController.AuthController;
 import com.example.bankcards.model.dto.jwt.JwtTokenDto;
-import com.example.bankcards.model.dto.user.LoginUserDto;
-import com.example.bankcards.model.dto.user.RegisterFormUserDto;
+import com.example.bankcards.model.dto.registerUser.LoginRegisterUserDto;
+import com.example.bankcards.model.dto.registerUser.RegisterFormUserDto;
 import com.example.bankcards.service.authService.AuthService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +26,7 @@ public class AuthControllerImpl implements AuthController {
 
     @PostMapping("/log")
     @Override
-    public JwtTokenDto loginUser(@RequestBody LoginUserDto loginDto) {
+    public JwtTokenDto loginUser(@RequestBody LoginRegisterUserDto loginDto) {
         return service.login(loginDto);
     }
 }

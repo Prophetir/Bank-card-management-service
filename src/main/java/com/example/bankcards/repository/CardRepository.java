@@ -20,8 +20,9 @@ public interface CardRepository extends JpaRepository<CardEntity, UUID> {
     @Query(value = "select c.* from cards c where c.owner_id = :profileId", nativeQuery = true)
     List<CardEntity> findAllUserCartByUserId(@Param("profileId") UUID profileId);
 
-    @Query(value = "select c.* from cards c where c.card_number = :cardNumber", nativeQuery = true)
-    Optional<CardEntity> findCardByCardNumber(@Param("cardNumber") String cardNumber);
+    @Query(value = "select c.* from cards c where (c.card_number = :cardNumber) " +
+            "or (c.card_number = :cardNumber c.owner.id = :profileId)", nativeQuery = true)
+    Optional<CardEntity> findCardByCardNumberOrByCardNumberAndProfileId(@Param("profileId") UUID profileId, @Param("cardNumber") String cardNumber);
 
     @Query("select c from CardEntity c where c.owner.phoneNumber = :phoneNumber")
     Optional<CardEntity> findCardByPhone(@Param("phoneNumber") String phoneNumber);
