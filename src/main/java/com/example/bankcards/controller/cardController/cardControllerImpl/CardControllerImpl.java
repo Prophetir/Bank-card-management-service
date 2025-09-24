@@ -2,14 +2,13 @@ package com.example.bankcards.controller.cardController.cardControllerImpl;
 
 import com.example.bankcards.controller.cardController.CardController;
 import com.example.bankcards.model.dto.card.CardDto;
-import com.example.bankcards.model.dto.card.CreateCardFormDto;
+import com.example.bankcards.model.dto.card.PassportData;
 import com.example.bankcards.model.dto.profile.CreateProfileFormDto;
-import com.example.bankcards.model.dto.card.NumberTransactionCardForm;
-import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
+import com.example.bankcards.model.dto.card.TransactionCardForm;
 import com.example.bankcards.model.dto.response.TransactionResponse;
 import com.example.bankcards.security.JwtTokenService;
 import com.example.bankcards.service.cardService.CardService;
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +17,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/card")
+@RequiredArgsConstructor
 public class CardControllerImpl implements CardController {
 
-    @Resource
-    private CardService service;
+    private final CardService service;
 
-    @Resource
-    private JwtTokenService tokenService;
+    private final JwtTokenService tokenService;
 
     /** USER endpoints **/
 
@@ -71,21 +69,21 @@ public class CardControllerImpl implements CardController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/transaction/card-number")
     @Override
-    public TransactionResponse transactionByCardNumber(@RequestHeader("Authorization") String tokenHeader, @RequestBody NumberTransactionCardForm numberForm) {
+    public TransactionResponse transactionByCardNumber(@RequestHeader("Authorization") String tokenHeader, @RequestBody TransactionCardForm numberForm) {
         return service.transactionByCardNumber(UUID.fromString(tokenService.decoderToken(tokenHeader).getSubject()), numberForm);
     }
 
     @PostMapping("/transaction/phone-number")
     @PreAuthorize("hasRole('USER')")
     @Override
-    public TransactionResponse transactionByPhoneNumber(@RequestHeader("Authorization") String tokenHeader, @RequestBody PhoneTransactionCardForm phoneForm) {
+    public TransactionResponse transactionByPhoneNumber(@RequestHeader("Authorization") String tokenHeader, @RequestBody TransactionCardForm phoneForm) {
         return service.transactionByPhoneNumber(UUID.fromString(tokenService.decoderToken(tokenHeader).getSubject()), phoneForm);
     }
 
     @PostMapping("/transaction/user-cards")
     @PreAuthorize("hasRole('USER')")
     @Override
-    public TransactionResponse transactionBetweenUserCards(@RequestHeader("Authorization") String tokenHeader, NumberTransactionCardForm numberForm) {
+    public TransactionResponse transactionBetweenUserCards(@RequestHeader("Authorization") String tokenHeader, TransactionCardForm numberForm) {
         return service.transactionBetweenUserCards(UUID.fromString(tokenService.decoderToken(tokenHeader).getSubject()), numberForm);
     }
 
@@ -101,7 +99,7 @@ public class CardControllerImpl implements CardController {
     @PostMapping("/admin/add")
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public TransactionResponse addCard(@RequestBody CreateCardFormDto cardFormDto) {
+    public TransactionResponse addCard(@RequestBody PassportData cardFormDto) {
         return service.addCard(cardFormDto);
     }
 

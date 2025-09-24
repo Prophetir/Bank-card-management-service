@@ -1,5 +1,6 @@
 package com.example.bankcards.service.authService.authServiceImpl;
 
+import com.example.bankcards.exception.exceptions.AlreadyExistsException;
 import com.example.bankcards.exception.exceptions.NotFoundException;
 import com.example.bankcards.model.dto.jwt.JwtTokenDto;
 import com.example.bankcards.model.dto.registerUser.LoginRegisterUserDto;
@@ -17,13 +18,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.rmi.AlreadyBoundException;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final RegisterUserRepository registerUserRepository;
+    private final RegisterUserRepository userRepository;
 
     private final JwtTokenService jwtTokenService;
 
@@ -33,44 +34,31 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public JwtTokenDto register(RegisterFormUserDto registerDto) {
+    public JwtTokenDto register(RegisterFormUserDto registerFormDto) {
 
-        RegisterUserEntity registerUserEntity = modelMapper.map(registerDto, RegisterUserEntity.class);
+        if (userRepository.existsByEmail(registerFormDto.getEmail()))
+            throw new AlreadyExistsException("User with this email already exists");
 
-        registerUserEntity.setPassword(passwordEncoder.encode(registerUserEntity.getPassword()));
+        RegisterUserEntity userEntity = modelMapper.map(registerFormDto, RegisterUserEntity.class);
 
-        registerUserEntity.setUserRole(UserRole.USER);
+        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
 
-        System.out.println("---------------------------------------\n" +
-                "|name: " + registerUserEntity.getName() + "| \n"
-                + "|email: " + registerUserEntity.getEmail() + "| \n"
-                + "|password: " + registerUserEntity.getPassword() + "| \n"
-                + "|role: " + registerUserEntity.getUserRole() + "| \n"
-                + "---------------------------------------\n");
+        userEntity.setUserRole(UserRole.USER);
 
-        registerUserRepository.save(registerUserEntity);
+        userRepository.save(userEntity);
 
-        return jwtTokenService.generateToken(modelMapper.map(registerUserEntity, RegisterUserDto.class));
+        return jwtTokenService.generateToken(modelMapper.map(userEntity, RegisterUserDto.class));
     }
 
-    @Transactional
     @Override
     public JwtTokenDto login(LoginRegisterUserDto loginRegisterUserDto) {
 
-       RegisterUserEntity userEntity = registerUserRepository.findByEmail(loginRegisterUserDto.getEmail())
-               .orElseThrow(() -> new NotFoundException("User not found"));
+       RegisterUserEntity userEntity = userRepository.findByEmail(loginRegisterUserDto.getEmail())
+               .orElseThrow(() -> new NotFoundException("User with this mail not found"));
 
         if (!passwordEncoder.matches(loginRegisterUserDto.getPassword(), userEntity.getPassword()))
             throw new BadCredentialsException("Wrong password");
 
-        System.out.println(
-                "\n-------| RegisterUserEntity for Login |-------\n"
-                + "        | Name: " +     userEntity.getName() +     " |\n"
-                + "        | Email: " +    userEntity.getEmail() +    " |\n"
-                + "        | Password: " + userEntity.getPassword() + " |\n"
-                + "        | Role: " +     userEntity.getUserRole() +     " |"
-                + "\n-------| RegisterUserEntity for Login |-------\n"
-        );
 
         return jwtTokenService.generateToken(modelMapper.map(userEntity, RegisterUserDto.class));
     }

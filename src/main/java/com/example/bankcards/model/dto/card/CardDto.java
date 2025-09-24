@@ -1,14 +1,13 @@
 package com.example.bankcards.model.dto.card;
 
 import com.example.bankcards.util.CardStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CardDto {
@@ -18,8 +17,6 @@ public class CardDto {
     private String cardNumber;
 
     private BigDecimal balance;
-
-    private UUID ownerId;
 
     private CardStatus status;
 }

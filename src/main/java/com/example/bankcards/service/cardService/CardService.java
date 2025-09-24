@@ -1,10 +1,9 @@
 package com.example.bankcards.service.cardService;
 
 import com.example.bankcards.model.dto.card.CardDto;
-import com.example.bankcards.model.dto.card.CreateCardFormDto;
+import com.example.bankcards.model.dto.card.PassportData;
 import com.example.bankcards.model.dto.profile.CreateProfileFormDto;
-import com.example.bankcards.model.dto.card.NumberTransactionCardForm;
-import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
+import com.example.bankcards.model.dto.card.TransactionCardForm;
 import com.example.bankcards.model.dto.response.TransactionResponse;
 
 import java.util.List;
@@ -18,11 +17,11 @@ public interface CardService {
 
     List<CardDto> getCards(UUID userId);
 
-    TransactionResponse transactionByCardNumber(UUID userId, NumberTransactionCardForm numberForm);
+    TransactionResponse transactionByCardNumber(UUID userId, TransactionCardForm numberForm);
 
-    TransactionResponse transactionByPhoneNumber(UUID userId, PhoneTransactionCardForm phoneForm);
+    TransactionResponse transactionByPhoneNumber(UUID userId, TransactionCardForm phoneForm);
 
-    TransactionResponse transactionBetweenUserCards(UUID userId, NumberTransactionCardForm numberForm);
+    TransactionResponse transactionBetweenUserCards(UUID userId, TransactionCardForm numberForm);
 
     TransactionResponse requestCreateCard(UUID userId, CreateProfileFormDto createProfileFormDto);
 
@@ -32,7 +31,7 @@ public interface CardService {
 
     /** ADMIN functions **/
 
-    TransactionResponse addCard(CreateCardFormDto cardFormDto);
+    TransactionResponse addCard(PassportData cardFormDto);
 
     TransactionResponse activateCard(CardDto cardDto);
 

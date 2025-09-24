@@ -1,8 +1,9 @@
 package com.example.bankcards.service.profileService.serviceImpl;
 
+import com.example.bankcards.exception.exceptions.AlreadyExistsException;
 import com.example.bankcards.exception.exceptions.NotFoundException;
-import com.example.bankcards.exception.exceptions.NotFoundProfileForCardCreateException;
-import com.example.bankcards.model.dto.card.CreateCardFormDto;
+import com.example.bankcards.exception.exceptions.NotFoundProfileException;
+import com.example.bankcards.model.dto.card.PassportData;
 import com.example.bankcards.model.dto.profile.CreateProfileFormDto;
 import com.example.bankcards.model.dto.profile.ProfileDto;
 import com.example.bankcards.model.dto.response.TransactionResponse;
@@ -14,7 +15,7 @@ import com.example.bankcards.util.MaskPhoneAndCardNumber;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -22,9 +23,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService, ProfileDomainService {
-    private final ProfileRepository profileRepository;
 
-    private final PasswordEncoder passwordEncoder;
+    private final ProfileRepository profileRepository;
 
     private final ModelMapper modelMapper;
 
@@ -46,23 +46,19 @@ public class ProfileServiceImpl implements ProfileService, ProfileDomainService 
      * Однако этого пока достаточно.
      **/
     @Override
-    public ProfileEntity findProfileByPassportData(CreateCardFormDto createFormDto) {
-        return profileRepository.findOne(((root, query, criteria) -> criteria.and(
-                        criteria.equal(root.get("passportNumber"), createFormDto.getPassportNumber()),
-                        criteria.equal(root.get("passportSeries"), createFormDto.getPassportSeries()),
-                        criteria.equal(root.get("documentType"), createFormDto.getDocumentType()),
-                        criteria.equal(root.get("citizenship"), createFormDto.getCitizenship()),
-                        criteria.equal(root.get("address"), createFormDto.getAddress()),
-                        criteria.equal(root.get("fullName"), createFormDto.getFullName()),
-                        criteria.equal(root.get("gender"), createFormDto.getGender()),
-                        criteria.equal(root.get("birthday"), createFormDto.getBirthday()))))
-                .orElseThrow(() -> new NotFoundProfileForCardCreateException(
-                        "Profile not exist. Required create new profile"));
+    public ProfileEntity findProfileByPassportData(PassportData passportData) {
+        return profileRepository.findOne(createSpecificationPassportData(passportData))
+                .orElseThrow(() ->
+                        new NotFoundProfileException("Profile not exist. Required create new profile"));
     }
 
     @Transactional
     @Override
     public TransactionResponse createProfile(CreateProfileFormDto cardFormDto) {
+
+        if (profileRepository.exists(createSpecificationPassportData(
+                modelMapper.map(cardFormDto, PassportData.class))))
+            throw new AlreadyExistsException("Profile already exist. Required create new profile");
 
         ProfileEntity profileEntity = ProfileEntity.builder()
                 .fullName(cardFormDto.getFullName())
@@ -81,7 +77,8 @@ public class ProfileServiceImpl implements ProfileService, ProfileDomainService 
 
         profileRepository.save(profileEntity);
 
-        return new TransactionResponse("Profile successfully created");
+        return new TransactionResponse("Profile by name: $s with related user: $s successfully created"
+                .formatted(profileEntity.getFullName(), profileEntity.getRelatedUser()));
     }
 
     @Override
@@ -112,5 +109,17 @@ public class ProfileServiceImpl implements ProfileService, ProfileDomainService 
         profile.setSoftDelete(true);
 
         return new TransactionResponse("Profile by name: %s was soft-deleted".formatted(profile.getFullName()));
+    }
+
+    private Specification<ProfileEntity> createSpecificationPassportData(PassportData passportData) {
+        return (root, query, criteria) -> criteria.and(
+                criteria.equal(root.get("passportNumber"), passportData.getPassportNumber()),
+                criteria.equal(root.get("passportSeries"), passportData.getPassportSeries()),
+                criteria.equal(root.get("documentType"), passportData.getDocumentType()),
+                criteria.equal(root.get("citizenship"), passportData.getCitizenship()),
+                criteria.equal(root.get("address"), passportData.getAddress()),
+                criteria.equal(root.get("fullName"), passportData.getFullName()),
+                criteria.equal(root.get("gender"), passportData.getGender()),
+                criteria.equal(root.get("birthday"), passportData.getBirthday()));
     }
 }

@@ -18,39 +18,40 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RegisterUserServiceImpl implements RegisterUserService {
 
-    private final RegisterUserRepository regUserRepository;
+    private final RegisterUserRepository userRepository;
 
     private final ModelMapper modelMapper;
 
     @Override
     public RegisterUserDto getRegisterUser(UUID id) {
         return modelMapper.map(
-                regUserRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found")),
+                userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found")),
                 RegisterUserDto.class);
     }
 
     @Transactional
     @Override
-    public TransactionResponse updateRegisterUser(UUID id, UpdateRegisterUserDto updateUserDto) {
-        RegisterUserEntity updatedRegUserEntity = regUserRepository.findById(id)
+    public TransactionResponse updateRegisterUser(UUID id, UpdateRegisterUserDto updateUserData) {
+        RegisterUserEntity updatedRegUserEntity = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        modelMapper.map(updateUserDto, updatedRegUserEntity);
+        modelMapper.map(updateUserData, updatedRegUserEntity);
 
-        regUserRepository.save(updatedRegUserEntity);
+        userRepository.save(updatedRegUserEntity);
 
-        return new TransactionResponse("Successfully updated user");
+        return new TransactionResponse("User by name: %s with rights: %s was successfully updated user"
+                .formatted(updatedRegUserEntity.getName(), updatedRegUserEntity.getUserRole()));
     }
 
     @Transactional
     @Override
     public TransactionResponse deleteRegisterUser(UUID id) {
-        RegisterUserEntity userEntity = regUserRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        RegisterUserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with this id not found"));
 
         String userName = userEntity.getName();
 
-        regUserRepository.delete(userEntity);
+        userRepository.delete(userEntity);
 
         return new TransactionResponse("User by name: %s was deleted".formatted(userName));
     }
@@ -58,10 +59,12 @@ public class RegisterUserServiceImpl implements RegisterUserService {
     @Transactional
     @Override
     public TransactionResponse softDeleteRegisterUser(UUID id) {
-        RegisterUserEntity userEntity = regUserRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        RegisterUserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with this id not found"));
 
         userEntity.setSoftDelete(true);
+
+        userRepository.save(userEntity);
 
         return new TransactionResponse("User by name: %s was soft-deleted".formatted(userEntity.getName()));
     }

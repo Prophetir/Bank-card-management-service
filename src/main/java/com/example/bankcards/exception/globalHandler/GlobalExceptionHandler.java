@@ -1,12 +1,9 @@
 package com.example.bankcards.exception.globalHandler;
 
-import com.example.bankcards.exception.exceptions.CreateException;
-import com.example.bankcards.exception.exceptions.NotFoundException;
-import com.example.bankcards.exception.exceptions.NotFoundProfileForCardCreateException;
-import com.example.bankcards.exception.exceptions.TransactionException;
+import com.example.bankcards.exception.exceptions.*;
 import com.example.bankcards.model.dto.exception.ExceptionResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpRequest;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,9 +55,9 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
-    @ExceptionHandler(NotFoundProfileForCardCreateException.class)
-    public ResponseEntity<ExceptionResponse> notFoundProfileForCreateCardHandler(
-            NotFoundProfileForCardCreateException exception, HttpServletRequest request) {
+    @ExceptionHandler(NotFoundProfileException.class)
+    public ResponseEntity<ExceptionResponse> notFoundExceptionHandler(
+            NotFoundProfileException exception, HttpServletRequest request) {
 
         return ResponseEntity.badRequest().body(ExceptionResponse.builder()
                 .timestamp(LocalDateTime.from(Instant.now()))
@@ -70,5 +67,19 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build()
         );
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> alreadyExistsExceptionHandler(
+            AlreadyExistsException exception, HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ExceptionResponse.builder()
+                        .timestamp(LocalDateTime.from(Instant.now()))
+                        .message(exception.getMessage())
+                        .status(HttpStatus.CONFLICT)
+                        .error("ALREADY_EXISTS")
+                        .path(request.getRequestURI())
+                        .build());
     }
 }

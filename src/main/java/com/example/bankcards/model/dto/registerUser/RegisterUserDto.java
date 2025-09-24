@@ -1,14 +1,14 @@
 package com.example.bankcards.model.dto.registerUser;
 
 import com.example.bankcards.util.UserRole;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class RegisterUserDto {
 

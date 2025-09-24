@@ -9,11 +9,10 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users")
 public class RegisterUserEntity {
 
@@ -23,7 +22,7 @@ public class RegisterUserEntity {
     private UUID id;
 
     @OneToOne
-    @JoinColumn(name = "user_profile", unique = true, nullable = false)
+    @JoinColumn(name = "user_profile", unique = true)
     private ProfileEntity userProfile;
 
     @Column(name = "name", nullable = false)

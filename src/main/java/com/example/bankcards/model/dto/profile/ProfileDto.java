@@ -1,20 +1,18 @@
 package com.example.bankcards.model.dto.profile;
 
 import com.example.bankcards.util.GenderType;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Data
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProfileDto {
 
     private UUID id;
-
-    private String email;
 
     private String fullName;
 

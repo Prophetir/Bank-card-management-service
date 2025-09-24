@@ -13,17 +13,14 @@ import java.util.UUID;
 @Repository
 public interface CardRepository extends JpaRepository<CardEntity, UUID> {
 
-    @Query("select c from CardEntity c join ProfileEntity p on c.owner = p.id " +
-            "where p.id = :profileId and c.id = :cardId")
-    Optional<CardEntity> findUserCardById(@Param("cardId") UUID cardId, @Param("profileId") UUID userId);
+    @Query(value = "select c from CardEntity c join ProfileEntity p on c.owner = p.id " +
+            "where p.id = :profileId and c.id = :cardId", nativeQuery = true)
+    Optional<CardEntity> findUserCardById(@Param("cardId") UUID cardId, @Param("profileId") UUID profileId);
 
     @Query(value = "select c.* from cards c where c.owner_id = :profileId", nativeQuery = true)
     List<CardEntity> findAllUserCartByUserId(@Param("profileId") UUID profileId);
 
     @Query(value = "select c.* from cards c where (c.card_number = :cardNumber) " +
-            "or (c.card_number = :cardNumber c.owner.id = :profileId)", nativeQuery = true)
-    Optional<CardEntity> findCardByCardNumberOrByCardNumberAndProfileId(@Param("profileId") UUID profileId, @Param("cardNumber") String cardNumber);
-
-    @Query("select c from CardEntity c where c.owner.phoneNumber = :phoneNumber")
-    Optional<CardEntity> findCardByPhone(@Param("phoneNumber") String phoneNumber);
+            "or (c.card_number = :value c.owner.id = :profileId)", nativeQuery = true)
+    Optional<CardEntity> findCardByCardNumberOrByCardNumberAndProfileId(@Param("profileId") UUID profileId, @Param("value") String value);
 }

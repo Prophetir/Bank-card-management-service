@@ -3,9 +3,10 @@ package com.example.bankcards.model.dto.card;
 import lombok.*;
 
 @Getter
-@Setter
-@Data
-public class CreateCardFormDto {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PassportData {
 
     private String fullName;
 

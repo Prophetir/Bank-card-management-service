@@ -1,14 +1,12 @@
 package com.example.bankcards.controller.cardController;
 
 import com.example.bankcards.model.dto.card.CardDto;
-import com.example.bankcards.model.dto.card.CreateCardFormDto;
+import com.example.bankcards.model.dto.card.PassportData;
 import com.example.bankcards.model.dto.profile.CreateProfileFormDto;
-import com.example.bankcards.model.dto.card.NumberTransactionCardForm;
-import com.example.bankcards.model.dto.card.PhoneTransactionCardForm;
+import com.example.bankcards.model.dto.card.TransactionCardForm;
 import com.example.bankcards.model.dto.response.TransactionResponse;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface CardController {
 
@@ -24,17 +22,17 @@ public interface CardController {
 
     TransactionResponse showBalance(String tokenHeader, CardDto cardDto);
 
-    TransactionResponse transactionByCardNumber(String tokenHeader, NumberTransactionCardForm numberForm);
+    TransactionResponse transactionByCardNumber(String tokenHeader, TransactionCardForm numberForm);
 
-    TransactionResponse transactionByPhoneNumber(String tokenHeader, PhoneTransactionCardForm phoneForm);
+    TransactionResponse transactionByPhoneNumber(String tokenHeader, TransactionCardForm phoneForm);
 
-    TransactionResponse transactionBetweenUserCards(String tokenHeader, NumberTransactionCardForm numberForm);
+    TransactionResponse transactionBetweenUserCards(String tokenHeader, TransactionCardForm numberForm);
 
     /** ADMIN endpoints **/
 
     List<CardDto> getAllCards(String tokenHeader);
 
-    TransactionResponse addCard(CreateCardFormDto cardFormDto);
+    TransactionResponse addCard(PassportData cardFormDto);
 
     TransactionResponse activateCard(CardDto cardDto);
 

@@ -1,5 +1,11 @@
 package com.example.bankcards.util;
 
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 /**
  * Эту ерунду надо переработать, но пока пусть побудет так,
  * т.к. есть более приоритетные задачи,
@@ -7,27 +13,42 @@ package com.example.bankcards.util;
  * **/
 public class GenerateCardNumber {
 
+    private static final String BIN = "3502 50";
+    private static final SecureRandom random = new SecureRandom();
+
     public static String generateCardNumber() {
+        StringBuilder cardNumber = new StringBuilder(BIN);
 
-        String tokenId = "f55fb98d-0a60-46ab-b9e9-e1654161f18d";
+        for (int i = 0; i < 9; i++) {
+            cardNumber.append(random.nextInt(10));
 
-        String userId = "f65fb98d-0a60-46ab-b9e9-e1654161f18d";
-
-        StringBuilder cardNumber = new StringBuilder().append("2");
-
-        char[] charactersUserId = userId.toCharArray();
-
-        for (int i = 0; i < 14; i++) {
-            if (Character.isDigit(charactersUserId[i])) {
-                if (charactersUserId.length - i % 4 == 0)
-                    cardNumber.append(" ");
-
-                cardNumber.append(userId.toCharArray()[i]);
-            }
+            if (cardNumber.toString().replaceAll("\\s+", "").length() % 4 == 0)  cardNumber.append(" ");
         }
 
-        cardNumber.append(tokenId.toCharArray()[0]);
+        cardNumber.append(generateLuneDigitNumber(cardNumber.toString()));
 
         return cardNumber.toString();
+    }
+
+    private static String generateLuneDigitNumber(String cardNumber) {
+        int[] numbers = cardNumber.chars().map(ch -> ch - '0').toArray();
+        int resultNumber = 0;
+        boolean doubleNumber = true;
+
+        for (int i = numbers.length - 1; i >= 0; i--) {
+            if (doubleNumber) {
+                int doubledNumber = numbers[i] * 2;
+
+                if (doubledNumber > 9)
+                    resultNumber += String.valueOf(doubledNumber)
+                            .chars().map(Character::getNumericValue).sum();
+                else resultNumber += doubledNumber;
+            } else
+                resultNumber += numbers[i];
+
+            doubleNumber = !doubleNumber;
+        }
+
+        return String.valueOf((10 - (resultNumber % 10)) % 10);
     }
 }
